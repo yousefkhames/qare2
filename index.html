@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Qare2 | قارئ</title>
+<meta name="description" content="Qare2: a free teleprompter for content creators. Paste a script, set the speed, mirror it, read Arabic and English. Runs in your browser.">
+<meta name="theme-color" content="#f1ebdd">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-view="home">
+<noscript><p style="padding:20px;font-family:sans-serif">Qare2 needs JavaScript. | قارئ يحتاج جافاسكريبت.</p></noscript>
+
+<header class="top" id="topbar">
+  <a class="brand" href="#/" aria-label="Qare2">
+    <img src="logo.svg" alt="" width="34" height="34">
+    <span class="brand-name">Qare2</span>
+  </a>
+  <div class="top-actions">
+    <button class="chip" id="btnLook" data-i18n="look" type="button">Look</button>
+    <button class="chip chip-lang" id="btnLang" type="button" aria-label="Language">EN</button>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="view-home" class="view">
+    <div class="hero">
+      <p class="eyebrow" data-i18n="eyebrow"></p>
+      <h1 data-i18n="heroTitle"></h1>
+      <p class="lede" data-i18n="heroLede"></p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="btnNew" type="button" data-i18n="newScript"></button>
+        <label class="btn btn-ghost" for="fileTxt" data-i18n="importTxt"></label>
+      </div>
+    </div>
+    <div class="list-head">
+      <h2 data-i18n="myScripts"></h2>
+      <span class="count" id="scriptCount"></span>
+    </div>
+    <ul class="cards" id="cards"></ul>
+    <p class="empty" id="emptyNote" hidden data-i18n="empty"></p>
+    <div class="backup">
+      <button class="link" id="btnExportAll" type="button" data-i18n="exportAll"></button>
+      <label class="link" for="fileBackup" data-i18n="importBackup"></label>
+      <input type="file" id="fileBackup" accept="application/json,.json" hidden>
+    </div>
+    <input type="file" id="fileTxt" accept=".txt,text/plain" hidden>
+  </section>
+
+  <!-- EDITOR -->
+  <section id="view-edit" class="view" hidden>
+    <div class="edit-bar">
+      <a class="back" href="#/" id="btnBack" data-i18n="back"></a>
+      <span class="saved" id="savedState" aria-live="polite"></span>
+    </div>
+    <label class="field-label" for="titleInput" data-i18n="title"></label>
+    <input id="titleInput" class="title-input" type="text" maxlength="120" autocomplete="off">
+    <label class="field-label" for="scriptInput" data-i18n="scriptLabel"></label>
+    <textarea id="scriptInput" class="script-input" spellcheck="false" dir="auto"></textarea>
+    <div class="stats" id="stats">
+      <div><b id="stWords">0</b><span data-i18n="words"></span></div>
+      <div><b id="stTime">0:00</b><span data-i18n="duration"></span></div>
+      <div><b id="stLines">0</b><span data-i18n="lines"></span></div>
+    </div>
+    <details class="syntax">
+      <summary data-i18n="syntaxTitle"></summary>
+      <ul>
+        <li><code>// ...</code> <span data-i18n="syntaxCue"></span></li>
+        <li><code>[ ... ]</code> <span data-i18n="syntaxBracket"></span></li>
+        <li><code>---</code> <span data-i18n="syntaxBreak"></span></li>
+      </ul>
+    </details>
+    <div class="edit-actions">
+      <button class="btn btn-primary btn-big" id="btnPlay" type="button" data-i18n="startPrompter"></button>
+      <div class="edit-secondary">
+        <button class="btn btn-ghost" id="btnDup" type="button" data-i18n="duplicate"></button>
+        <button class="btn btn-ghost" id="btnExport" type="button" data-i18n="exportTxt"></button>
+        <button class="btn btn-danger" id="btnDelete" type="button" data-i18n="delete"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMPTER -->
+  <section id="view-play" class="view-play" hidden data-theme="ink">
+    <div class="stage" id="stage">
+      <div class="reel" id="reel"></div>
+      <div class="guide" id="guide" aria-hidden="true"><i></i><i></i></div>
+    </div>
+    <div class="progress" id="progress" aria-hidden="true"><span id="progressFill"></span></div>
+    <div class="count-overlay" id="countOverlay" hidden aria-live="assertive"></div>
+    <div class="end-card" id="endCard" hidden>
+      <p data-i18n="finished"></p>
+      <button class="btn btn-primary" id="btnAgain" type="button" data-i18n="again"></button>
+    </div>
+
+    <div class="hud" id="hud">
+      <div class="hud-top">
+        <button class="hbtn" id="hExit" type="button" aria-label="Exit">&#x2715;</button>
+        <div class="hud-time"><b id="hElapsed">0:00</b><span id="hLeft">0:00</span></div>
+        <button class="hbtn" id="hFull" type="button" aria-label="Fullscreen">&#x26F6;</button>
+      </div>
+      <div class="hud-bottom">
+        <div class="dial">
+          <button class="hbtn" id="hSlow" type="button" aria-label="Slower">&minus;</button>
+          <div class="dial-val"><b id="hWpm">130</b><span data-i18n="wpm"></span></div>
+          <button class="hbtn" id="hFast" type="button" aria-label="Faster">+</button>
+        </div>
+        <button class="play" id="hPlay" type="button" aria-label="Play"></button>
+        <div class="dial">
+          <button class="hbtn" id="hSmall" type="button" aria-label="Smaller text">A&minus;</button>
+          <div class="dial-val"><b id="hSize">44</b><span data-i18n="px"></span></div>
+          <button class="hbtn" id="hBig" type="button" aria-label="Bigger text">A+</button>
+        </div>
+        <div class="hud-row">
+          <button class="hbtn hbtn-txt" id="hMirror" type="button" aria-pressed="false" data-i18n="mirror"></button>
+          <button class="hbtn hbtn-txt" id="hFlip" type="button" aria-pressed="false" data-i18n="flip"></button>
+          <button class="hbtn hbtn-txt" id="hRestart" type="button" data-i18n="restart"></button>
+          <button class="hbtn hbtn-txt" id="hLook" type="button" data-i18n="look"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- LOOK SHEET -->
+<div class="sheet-back" id="sheetBack" hidden></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-head">
+    <h3 id="sheetTitle" data-i18n="lookTitle"></h3>
+    <button class="chip" id="sheetClose" type="button" data-i18n="done"></button>
+  </div>
+  <div class="sheet-body">
+    <label class="row"><span data-i18n="speed"></span><output id="oWpm"></output>
+      <input type="range" id="rWpm" min="40" max="320" step="5"></label>
+    <label class="row"><span data-i18n="fontSize"></span><output id="oSize"></output>
+      <input type="range" id="rSize" min="20" max="140" step="2"></label>
+    <label class="row"><span data-i18n="lineHeight"></span><output id="oLh"></output>
+      <input type="range" id="rLh" min="1.1" max="2.2" step="0.05"></label>
+    <label class="row"><span data-i18n="margin"></span><output id="oMargin"></output>
+      <input type="range" id="rMargin" min="0" max="30" step="1"></label>
+    <label class="row"><span data-i18n="countdown"></span><output id="oCount"></output>
+      <input type="range" id="rCount" min="0" max="10" step="1"></label>
+
+    <div class="grp"><span data-i18n="theme"></span>
+      <div class="seg" id="segTheme" role="group">
+        <button type="button" data-v="ink" data-i18n="thInk"></button>
+        <button type="button" data-v="paper" data-i18n="thPaper"></button>
+        <button type="button" data-v="amber" data-i18n="thAmber"></button>
+        <button type="button" data-v="green" data-i18n="thGreen"></button>
+      </div></div>
+    <div class="grp"><span data-i18n="font"></span>
+      <div class="seg" id="segFont" role="group">
+        <button type="button" data-v="plex" data-i18n="fPlex"></button>
+        <button type="button" data-v="serif" data-i18n="fSerif"></button>
+        <button type="button" data-v="mono" data-i18n="fMono"></button>
+      </div></div>
+    <div class="grp"><span data-i18n="direction"></span>
+      <div class="seg" id="segDir" role="group">
+        <button type="button" data-v="auto" data-i18n="dAuto"></button>
+        <button type="button" data-v="rtl" data-i18n="dRtl"></button>
+        <button type="button" data-v="ltr" data-i18n="dLtr"></button>
+      </div></div>
+    <div class="grp"><span data-i18n="align"></span>
+      <div class="seg" id="segAlign" role="group">
+        <button type="button" data-v="start" data-i18n="aStart"></button>
+        <button type="button" data-v="center" data-i18n="aCenter"></button>
+      </div></div>
+    <div class="grp"><span data-i18n="mirrorTitle"></span>
+      <div class="toggles">
+        <label class="tgl"><input type="checkbox" id="cMirror"><span data-i18n="mirror"></span></label>
+        <label class="tgl"><input type="checkbox" id="cFlip"><span data-i18n="flip"></span></label>
+        <label class="tgl"><input type="checkbox" id="cGuide"><span data-i18n="guideLine"></span></label>
+        <label class="tgl"><input type="checkbox" id="cCues"><span data-i18n="showCues"></span></label>
+      </div></div>
+    <div class="preview" id="preview" data-theme="ink"><p id="previewText"></p></div>
+    <button class="link" id="btnReset" type="button" data-i18n="resetLook"></button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="lib.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

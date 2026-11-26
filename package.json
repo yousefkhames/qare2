@@ -1,0 +1,11 @@
+{
+  "name": "qare2",
+  "version": "1.0.0",
+  "description": "Free teleprompter for content creators. Arabic and English.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/unit.test.js && node tests/e2e.js",
+    "screenshots": "node tests/screenshots.js"
+  },
+  "devDependencies": { "puppeteer-core": "^24.0.0" }
+}

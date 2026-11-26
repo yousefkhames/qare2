@@ -1,0 +1,14 @@
+{
+  "name": "Qare2 | قارئ",
+  "short_name": "Qare2",
+  "description": "Free teleprompter for content creators. Arabic and English.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1ebdd",
+  "theme_color": "#15191c",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
