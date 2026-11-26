@@ -9,6 +9,15 @@
 <img src="docs/editor-ar.png" width="230" alt="Script editor in Arabic">
 </p>
 
+## Screenshots
+
+Captured from the live site (https://yousefkhames.github.io/qare2/).
+
+<p>
+  <img src="docs/screenshots/live-desktop.png" alt="qare2 desktop view" width="640">
+  <img src="docs/screenshots/live-mobile.png" alt="qare2 mobile view" width="200">
+</p>
+
 ## Why
 
 Reading a script while looking at the lens is hard on a phone. Most teleprompter apps are English first, push a subscription, or need an account. Qare2 is a web page: open it, paste, read. Arabic is a first-class language, not an afterthought.
